@@ -192,8 +192,7 @@ class BinaryTreeIndex {
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Symulowana baza danych:\n");
-        
+        System.out.println("Baza danych osób:\n");
         System.out.println("id\t|\timię\t|\twiek");
         System.out.println("------------------------------------");
         for (SimulatedDatabase.Row row : SimulatedDatabase.table) {
@@ -204,16 +203,12 @@ public class Main {
             System.out.println(row.getAge());
         }
         
-        System.out.println();
         BinaryTreeIndex index = new BinaryTreeIndex();
-
         for (SimulatedDatabase.Row row : SimulatedDatabase.table) {
-            index.insert(row.id, row);
+            index.insert(row.getAge(), row);
         }
-
-        System.out.println("Utworzony indeks (przejście w porządku in-order):");
-        index.printIndex();
-
+        index.buildAgeIndex();
+        
         Scanner scanner = new Scanner(System.in);
         int minAge = 0;
         int maxAge = 0;
@@ -222,19 +217,34 @@ public class Main {
         while (!validInput) {
             try {
                 System.out.print("\nPodaj minimalny wiek: ");
-                String minAgeInput = scanner.nextLine();
-                minAge = Integer.parseInt(minAgeInput);
+                String minInput = scanner.nextLine().trim();
+                
+                if (minInput.isEmpty() || minInput.length() > 3) {
+                    System.out.println("Błąd: Wprowadź poprawny wiek (0-999).");
+                    continue;
+                }
                 
                 System.out.print("Podaj maksymalny wiek: ");
-                String maxAgeInput = scanner.nextLine();
-                maxAge = Integer.parseInt(maxAgeInput);
+                String maxInput = scanner.nextLine().trim();
+                
+                if (maxInput.isEmpty() || maxInput.length() > 3) {
+                    System.out.println("Błąd: Wprowadź poprawny wiek (0-999).");
+                    continue;
+                }
+                
+                minAge = Integer.parseInt(minInput);
+                maxAge = Integer.parseInt(maxInput);
                 
                 if (minAge < 0 || maxAge < 0) {
-                    System.out.println("Wiek nie może być ujemny. Spróbuj ponownie.");
+                    System.out.println("Błąd: Wiek nie może być ujemny.");
+                    continue;
+                }
+                if (minAge > 150 || maxAge > 150) {
+                    System.out.println("Błąd: Wiek nie może być większy niż 150 lat.");
                     continue;
                 }
                 if (minAge > maxAge) {
-                    System.out.println("Minimalny wiek nie może być większy niż maksymalny. Spróbuj ponownie.");
+                    System.out.println("Błąd: Minimalny wiek nie może być większy niż maksymalny.");
                     continue;
                 }
                 validInput = true;
@@ -245,8 +255,7 @@ public class Main {
 
         List<SimulatedDatabase.Row> filteredResults = index.filterByAgeRange(minAge, maxAge);
         
-        System.out.println("\nWyniki filtrowania (wiek " + minAge + "-" + maxAge + "):");
-        System.out.println("------------------------------------");
+        System.out.println("\nOsoby w wieku " + minAge + "-" + maxAge + " lat:\n");
         if (filteredResults.isEmpty()) {
             System.out.println("Nie znaleziono osób w podanym przedziale wiekowym.");
         } else {
@@ -254,28 +263,14 @@ public class Main {
             System.out.println("------------------------------------");
             filteredResults.sort((a, b) -> Integer.compare(a.getAge(), b.getAge()));
             for (SimulatedDatabase.Row row : filteredResults) {
-                System.out.printf("%d\t|\t%s\t|\t%d%n", 
-                    row.getId(), row.getName(), row.getAge());
+                System.out.print(row.getId());
+                System.out.print("\t|\t");
+                System.out.print(row.getName());
+                System.out.print("\t|\t");
+                System.out.println(row.getAge());
             }
-            System.out.println("\nZnaleziono osób: " + filteredResults.size());
         }
-
-        int searchId = 10;
-        SimulatedDatabase.Row result = index.search(searchId);
-        if (result != null) {
-            System.out.println("\nWynik wyszukiwania dla ID " + searchId + ": " + result);
-        } else {
-            System.out.println("\nNie znaleziono wiersza o podanym ID " + searchId);
-        }
-
-        searchId = 25;
-        result = index.search(searchId);
-        if (result != null) {
-            System.out.println("Wynik wyszukiwania dla ID " + searchId + ": " + result);
-        } else {
-            System.out.println("Nie znaleziono wiersza o podanym ID " + searchId);
-        }
-
+        
         scanner.close();
     }
 } 
