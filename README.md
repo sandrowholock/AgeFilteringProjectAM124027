@@ -1,8 +1,6 @@
-git clone https://github.com/sandrowholock/AgeFilteringProjectAM124027.git
+# Filtrowanie po wieku
 
-Sposób uruchomienia
-Przez terminal
-Otwórz terminal w folderze z plikami źródłowymi
-javac Main.java BinaryTreeIndex.java SimulatedDatabase.java
-Uruchom program:
+
+git clone https://github.com/sandrowholock/AgeFilteringProjectAM124027.git && \cd AgeFilteringProjectAM124027 && \
+javac Main.java && \
 java Main
